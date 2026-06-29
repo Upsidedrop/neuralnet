@@ -30,7 +30,16 @@ int main(){
     std::cout << "\n";
 
     NeuralNet<2, 3, 2, 2> bar;
-    std::cout << bar.getWeightIndex(2, 2, 1) << "\n";
-
+    double input[2] =
+    {
+        1, -1
+    };
+    double output[2];
+    for(int i = 0; i < 21; ++i){
+        bar.weights[i] = 1;
+    }
+    bar.testRun(input, output);
+    std::cout << output[0] << "\n";
+    std::cout << output[1] << "\n";
 
 }
