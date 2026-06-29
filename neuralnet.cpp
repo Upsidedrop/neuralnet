@@ -82,7 +82,6 @@ double NeuralNet<WIDTH, HEIGHT, NUM_INPUTS, NUM_OUTPUTS>::train(double* inputs, 
     }
     for(int i = 0; i < NUM_OUTPUTS; ++i){
         outputs[i] = outputDuals[i].real;
-        outputDuals[i].print();
     }
     return 0;
 }
