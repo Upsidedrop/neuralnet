@@ -32,7 +32,7 @@ int main(){
     NeuralNet<2, 3, 2, 2> bar;
     double input[2] =
     {
-        1, -1
+        1, 1
     };
     double output[2];
     for(int i = 0; i < 21; ++i){
@@ -42,4 +42,7 @@ int main(){
     std::cout << output[0] << "\n";
     std::cout << output[1] << "\n";
 
+    bar.train(input, output, nullptr);
+    std::cout << output[0] << "\n";
+    std::cout << output[1] << "\n";
 }

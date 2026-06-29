@@ -85,6 +85,16 @@ Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::operator+(const Dual& other
     return res;
 }
 template <int DIMENSIONS, int DEGREES>
+Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::operator+=(const Dual& other){
+    real += other.real;
+    for(int i = 0; i < DIMENSIONS; ++i){
+        for(int j = 0; j < DEGREES; ++j){
+            derivatives[i][j] += other.derivatives[i][j];
+        }
+    }
+    return *this;
+}
+template <int DIMENSIONS, int DEGREES>
 Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::pow(int num){
     Dual<DIMENSIONS, DEGREES> res = *this;
     for(int i = 1; i < num; ++i){
@@ -149,4 +159,13 @@ Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::ln(){
     res.real = std::log(real);
 
     return res;
+}
+template <int DIMENSIONS, int DEGREES>
+Dual<DIMENSIONS, DEGREES>::Dual(double initValue){
+    for(int i = 0; i < DIMENSIONS; ++i){
+        for(int j = 0; j < DEGREES; ++j){
+            derivatives[i][j] = initValue;
+        }
+    }
+    real = initValue;
 }
