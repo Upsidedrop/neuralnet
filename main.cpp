@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "DualNumber.hpp"
+#include "NeuralNet.hpp"
 
 int main(){
     std::cout << "Hello, World!\n";
@@ -26,4 +27,10 @@ int main(){
     foo.print();
     std::cout << "\n";
     (Dual<2, 2>(init2, 7) * 3).print();
+    std::cout << "\n";
+
+    NeuralNet<2, 3, 2, 2> bar;
+    std::cout << bar.getWeightIndex(2, 2, 1) << "\n";
+
+
 }
