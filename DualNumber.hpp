@@ -10,8 +10,9 @@ class Dual{
     Dual(const Dual& other);
     Dual operator=(Dual&& other);
     Dual(Dual&& other);
+    void checkNan(const char* text);
     Dual operator*(double other);
-    Dual operator*(const Dual& other);
+    Dual operator*(Dual other);
     Dual operator+(const Dual& other);
     Dual operator+=(const Dual& other);
     Dual operator+(double other);

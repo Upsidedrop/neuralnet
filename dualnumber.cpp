@@ -3,21 +3,26 @@
 #include "math.h"
 
 template <int DIMENSIONS, int DEGREES>
-Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::operator*(const Dual<DIMENSIONS, DEGREES>& other){
-    Dual<DIMENSIONS, DEGREES> res;
+Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::operator*(Dual<DIMENSIONS, DEGREES> other){
+    Dual<DIMENSIONS, DEGREES> res(0);
+    other.checkNan("other");
     res.real = other.real * real;
     for(int i = 0; i < DIMENSIONS; ++i){
         for(int j = 0; j < DEGREES; ++j){
             res.derivatives[i][j] += other.real * derivatives[i][j];
+            res.checkNan("1*");
             for(int k = j; k < DEGREES; ++k){
                 if(k == j){
                     res.derivatives[i][k] += real * other.derivatives[i][j];
+                    res.checkNan("2*");
                     continue;
                 }
                 res.derivatives[i][k] += derivatives[i][k-1] * other.derivatives[i][j];
+                res.checkNan("*3");
             }
         }
     }
+    res.checkNan("*");
     return res;
 }
 template <int DIMENSIONS, int DEGREES>
@@ -71,6 +76,7 @@ Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::operator*(double other){
             res.derivatives[i][j] *= other;
         }
     }
+    res.checkNan("*double");
     return res;
 }
 template <int DIMENSIONS, int DEGREES>
@@ -82,6 +88,7 @@ Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::operator+(const Dual& other
             res.derivatives[i][j] = derivatives[i][j] + other.derivatives[i][j];
         }
     }
+    res.checkNan("+");
     return res;
 }
 template <int DIMENSIONS, int DEGREES>
@@ -100,6 +107,7 @@ Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::pow(int num){
     for(int i = 1; i < num; ++i){
         res = *this * res;
     }
+    res.checkNan("^");
     return res;
 }
 template <int DIMENSIONS, int DEGREES>
@@ -120,6 +128,7 @@ Dual<DIMENSIONS, DEGREES>::Dual(const Dual& other){
             derivatives[i][j] = other.derivatives[i][j];
         }
     }
+    checkNan("copy()");
 }
 template <int DIMENSIONS, int DEGREES>
 Dual<DIMENSIONS, DEGREES>::Dual(Dual&& other){
@@ -144,6 +153,7 @@ template <int DIMENSIONS, int DEGREES>
 Dual<DIMENSIONS, DEGREES> Dual<DIMENSIONS, DEGREES>::operator+(double other){
     Dual res = *this;
     res.real += other;
+    res.checkNan("+double");
     return res;
 }
 template <int DIMENSIONS, int DEGREES>
@@ -168,4 +178,15 @@ Dual<DIMENSIONS, DEGREES>::Dual(double initValue){
         }
     }
     real = initValue;
+}
+template <int DIMENSIONS, int DEGREES>
+void Dual<DIMENSIONS, DEGREES>::checkNan(const char* text){
+    for(int i = 0; i < DIMENSIONS; ++i){
+        for(int j = 0; j < DEGREES; ++j){
+            if(!std::isfinite(derivatives[i][j])){
+                std::cout << text << "\n";
+                exit(-1);
+            }
+        }
+    }
 }

@@ -1,13 +1,13 @@
 #include "Vector.hpp"
 
-template <int DIMENSIONS>
-Vector<DIMENSIONS> Vector<DIMENSIONS>::hadamard(const Vector& other){
-    Vector<DIMENSIONS> res;
-    for(int i = 0; i < DIMENSIONS; ++i){
-        res.data[i] = data[i] * other.data[i];
-    }
-    return res;
-}
+// template <int DIMENSIONS>
+// Vector<DIMENSIONS> Vector<DIMENSIONS>::hadamard(const Vector& other){
+//     Vector<DIMENSIONS> res;
+//     for(int i = 0; i < DIMENSIONS; ++i){
+//         res.data[i] = data[i] * other.data[i];
+//     }
+//     return res;
+// }
 template <int DIMENSIONS>
 double Vector<DIMENSIONS>::squaredMagnitude(){
     double res = 0;
