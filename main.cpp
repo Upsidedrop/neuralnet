@@ -1,5 +1,4 @@
 #include <iostream>
-#include <random>
 
 #include "DualNumber.hpp"
 #include "NeuralNet.hpp"
@@ -81,11 +80,11 @@ int main(){
     b.print();
 
     while(true){
-        int stop = 0;
-        std::cin >> stop;
-        if(stop){
-            break;
-        }
+        // int stop = 0;
+        // std::cin >> stop;
+        // if(stop){
+        //     break;
+        // }
 
         std::cout << bar.train(input, output, desired, 1) << "\n";
         std::cout << output[0] << "\n";

@@ -70,7 +70,8 @@ double NeuralNet<WIDTH, HEIGHT, NUM_INPUTS, NUM_OUTPUTS>::train(double* inputs, 
             }
             for(int j = 0; j < HEIGHT; ++j){
                 for(int k = 0; k < HEIGHT; ++k){
-                    nextLayerValues[k] += currentLayerValues[j] * createTracker<NUM_WEIGHTS, 1>(weights[getWeightIndex(i, j, k)], getWeightIndex(i, j, k)) * (1 / (double)HEIGHT);
+                    currentLayerValues[j].createTracker(weights[getWeightIndex(i, j, k)], getWeightIndex(i, j, k));
+                    nextLayerValues[k] += currentLayerValues[j] * (1 / (double)HEIGHT);
                 }
             }
         }
@@ -83,7 +84,8 @@ double NeuralNet<WIDTH, HEIGHT, NUM_INPUTS, NUM_OUTPUTS>::train(double* inputs, 
         // nextLayerValues[j] = (nextLayerValues[j].exp() + 1).ln() + (((nextLayerValues[j] * -1).exp() + 1).ln()) * (-0.1);
         nextLayerValues[j] = nextLayerValues[j] * ((nextLayerValues[j].real < 0)? 0.1 : 1);
         for(int i = 0; i < NUM_OUTPUTS; ++i){
-            outputDuals[i] += nextLayerValues[j] * createTracker<NUM_WEIGHTS, 1>(weights[getWeightIndex(WIDTH, j, i)], getWeightIndex(WIDTH, j, i)) * (1 / (double)HEIGHT); 
+            nextLayerValues[j].createTracker(weights[getWeightIndex(WIDTH, j, i)], getWeightIndex(WIDTH, j, i));
+            outputDuals[i] += nextLayerValues[j] * (1 / (double)HEIGHT); 
         }
     }
     for(int i = 0; i < NUM_OUTPUTS; ++i){

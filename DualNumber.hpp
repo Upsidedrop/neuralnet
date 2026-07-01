@@ -14,6 +14,7 @@ class Dual{
     Dual operator*(double other);
     Dual operator*(Dual other);
     Dual operator+(const Dual& other);
+    void createTracker(double value, int index);
     Dual operator+=(const Dual& other);
     Dual operator+(double other);
     Dual exp();
