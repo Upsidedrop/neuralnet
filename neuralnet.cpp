@@ -49,19 +49,19 @@ void NeuralNet<WIDTH, HEIGHT, NUM_INPUTS, NUM_OUTPUTS>::testRun(double* inputs, 
 template<int WIDTH, int HEIGHT, int NUM_INPUTS, int NUM_OUTPUTS>
 double NeuralNet<WIDTH, HEIGHT, NUM_INPUTS, NUM_OUTPUTS>::train(double* inputs, double* outputs, double* desiredOutputs, double learningRate){
     const int NUM_WEIGHTS = HEIGHT * (HEIGHT * (WIDTH - 1) + NUM_INPUTS + NUM_OUTPUTS);
-    Dual<NUM_WEIGHTS, 2> finalCost(0);
+    Dual<NUM_WEIGHTS, 1> finalCost(0);
     {
-    Dual<NUM_WEIGHTS,2> nextLayerValues[HEIGHT];
+    Dual<NUM_WEIGHTS,1> nextLayerValues[HEIGHT];
     for(int i = 0; i < HEIGHT; ++i){
-        nextLayerValues[i] = Dual<NUM_WEIGHTS, 2>(0);
+        nextLayerValues[i] = Dual<NUM_WEIGHTS, 1>(0);
     }
     for(int i = 0; i < NUM_INPUTS; ++i){
         for(int j = 0; j < HEIGHT; ++j){
-            nextLayerValues[j] += createTracker<NUM_WEIGHTS, 2>(weights[getWeightIndex(0, i, j)], getWeightIndex(0, i, j)) * inputs[i] * (1 / (double)NUM_INPUTS);
+            nextLayerValues[j] += createTracker<NUM_WEIGHTS, 1>(weights[getWeightIndex(0, i, j)], getWeightIndex(0, i, j)) * inputs[i] * (1 / (double)NUM_INPUTS);
         }
     }
     {
-        Dual<NUM_WEIGHTS,2> currentLayerValues[HEIGHT];
+        Dual<NUM_WEIGHTS,1> currentLayerValues[HEIGHT];
         for(int i = 1; i < WIDTH; ++i){
             for(int j = 0; j < HEIGHT; ++j){
                 // currentLayerValues[j] = (nextLayerValues[j].exp() + 1).ln() + (((nextLayerValues[j] * -1).exp() + 1).ln()) * (-0.1);
@@ -70,20 +70,20 @@ double NeuralNet<WIDTH, HEIGHT, NUM_INPUTS, NUM_OUTPUTS>::train(double* inputs, 
             }
             for(int j = 0; j < HEIGHT; ++j){
                 for(int k = 0; k < HEIGHT; ++k){
-                    nextLayerValues[k] += currentLayerValues[j] * createTracker<NUM_WEIGHTS, 2>(weights[getWeightIndex(i, j, k)], getWeightIndex(i, j, k)) * (1 / (double)HEIGHT);
+                    nextLayerValues[k] += currentLayerValues[j] * createTracker<NUM_WEIGHTS, 1>(weights[getWeightIndex(i, j, k)], getWeightIndex(i, j, k)) * (1 / (double)HEIGHT);
                 }
             }
         }
     }
-    Dual<NUM_WEIGHTS,2> outputDuals[NUM_OUTPUTS];
+    Dual<NUM_WEIGHTS,1> outputDuals[NUM_OUTPUTS];
     for(int i = 0; i < NUM_OUTPUTS; ++i){
-        outputDuals[i] = Dual<NUM_WEIGHTS,2>(0); 
+        outputDuals[i] = Dual<NUM_WEIGHTS,1>(0); 
     }
     for(int j = 0; j < HEIGHT; ++j){
         // nextLayerValues[j] = (nextLayerValues[j].exp() + 1).ln() + (((nextLayerValues[j] * -1).exp() + 1).ln()) * (-0.1);
         nextLayerValues[j] = nextLayerValues[j] * ((nextLayerValues[j].real < 0)? 0.1 : 1);
         for(int i = 0; i < NUM_OUTPUTS; ++i){
-            outputDuals[i] += nextLayerValues[j] * createTracker<NUM_WEIGHTS, 2>(weights[getWeightIndex(WIDTH, j, i)], getWeightIndex(WIDTH, j, i)) * (1 / (double)HEIGHT); 
+            outputDuals[i] += nextLayerValues[j] * createTracker<NUM_WEIGHTS, 1>(weights[getWeightIndex(WIDTH, j, i)], getWeightIndex(WIDTH, j, i)) * (1 / (double)HEIGHT); 
         }
     }
     for(int i = 0; i < NUM_OUTPUTS; ++i){
@@ -98,10 +98,10 @@ double NeuralNet<WIDTH, HEIGHT, NUM_INPUTS, NUM_OUTPUTS>::train(double* inputs, 
 
         for(int i = 0; i < NUM_WEIGHTS; ++i){
             firstDerivatives.data[i] = finalCost.derivatives[i][0];
-            hadamardVector.data[i] = finalCost.derivatives[i][1] * firstDerivatives.data[i];
+            // hadamardVector.data[i] = finalCost.derivatives[i][1] * firstDerivatives.data[i];
         }
-
-        weightChanges = hadamardVector * firstDerivatives.squaredMagnitude() * (1/hadamardVector.squaredMagnitude()) * learningRate;
+        weightChanges = (firstDerivatives * finalCost.real) * (1/firstDerivatives.squaredMagnitude()) * learningRate;
+        // weightChanges = hadamardVector * firstDerivatives.squaredMagnitude() * (1/hadamardVector.squaredMagnitude()) * learningRate;
         // finalCost.print();
 
     }

@@ -38,18 +38,15 @@ int main(){
     NeuralNet<WIDTH, HEIGHT, NUM_INPUTS, NUM_OUTPUTS> bar;
     double input[NUM_INPUTS] =
     {
-        2, 2
+        1, 2
     };
     double desired[NUM_OUTPUTS] =
     {
-        10, 15
+        3,6
     };
     double output[NUM_OUTPUTS];
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> dis(-1, 1);
     for(int i = 0; i < HEIGHT * (HEIGHT * (WIDTH - 1) + NUM_INPUTS + NUM_OUTPUTS); ++i){
-        bar.weights[i] = 1;
+        bar.weights[i] = 2;
     }
     bar.testRun(input, output);
     std::cout << output[0] << "\n";
@@ -90,7 +87,7 @@ int main(){
             break;
         }
 
-        std::cout << bar.train(input, output, desired, 0.0025) << "\n";
+        std::cout << bar.train(input, output, desired, 1) << "\n";
         std::cout << output[0] << "\n";
         std::cout << output[1] << "\n";
     }
